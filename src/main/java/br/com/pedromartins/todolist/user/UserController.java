@@ -1,5 +1,6 @@
 package br.com.pedromartins.todolist.user;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +22,11 @@ public class UserController {
             return ResponseEntity.status(400).body("Usuário já existe na base de dados.");
         }
 
+        var passwordHased = BCrypt.withDefaults().hashToString(12, userModel.getPassword().toCharArray());
+
+        userModel.setPassword(passwordHased);
+
         var userCreated = this.userRepository.save(userModel);
-        return ResponseEntity.status(200).body("Usuário criado.");
+        return ResponseEntity.status(200).body(userCreated);
     }
 }
